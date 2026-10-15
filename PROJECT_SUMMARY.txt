@@ -1,0 +1,70 @@
+SHARK COURSE - QUICK PROJECT GUIDE
+Updated: 2026-10-15
+
+GOAL
+Build a playable Unity course: start platform -> five moving shark platforms -> finish platform. Sharks are calm until boarded; they bite after 2 seconds if the player is still on top. Falling or getting bitten respawns the player at the start. R restarts the course.
+
+WHAT WAS USED
+- Unity 6.3 and C# scripts.
+- glTFast 6.20.0 package to import the shark GLB model.
+- Unity Animator controllers for the shark swim/bite and player animations.
+- CharacterController for the course player's movement and jumping.
+- Unity Editor/AssetDatabase tools to generate and organize prefabs and rebuild the course while keeping asset GUID references.
+- Models and player animations from the supplied shark and FallGuyClone assets; Kenney-style materials for the course.
+
+HOW THE SHARK WORKS
+1. The shark has a solid top collider and a separate boarding trigger.
+2. A player-controller collision or trigger contact registers a player only when their collider is on the shark's top surface.
+3. A 2-second countdown starts. If the player steps off or is no longer alive, the target/countdown clears and no bite damage is applied.
+4. When the countdown completes, the shark stops swimming, plays its bite animation, and smoothly pitches its visual upward by 60 degrees. The platform collider stays level.
+5. Damage happens only if the same player is still standing on top when the bite lands. The shark then resets so the course can be played again.
+6. While swimming, the visual faces 90 degrees to the right or -90 degrees to the left. Sharks move sideways in a repeating path.
+
+COURSE AND PLAYER
+- SampleScene has a start platform, five sharks, a finish platform/line, and water.
+- The standalone Course Player moves with WASD, jumps with Space, sprints with Shift, and is followed by a smooth mouse-orbit camera.
+- On a bite, the receiver plays the player's death animation (when available); the course manager waits, then respawns the player. Falling below the course also respawns them. R resets player and sharks. Crossing the finish line ends the level.
+- The player/death receiver is currently this course's standalone implementation; it is not yet connected to the team's shared player/death system.
+
+WHERE TO LOOK
+SharkyShark/Assets/Scenes/SampleScene.unity
+  Saved course layout and references.
+
+SharkyShark/Assets/Shark/Runtime/
+  SharkPlatformController.cs       Bite, boarding, swimming, facing, and reset.
+  SharkCourseManager.cs            Fall/bite respawn, restart, and finish state.
+  SharkCoursePlayerController.cs   WASD, jump, sprint, animation state, top contact.
+  SharkBiteReceiver.cs             Player alive/dead state and death animation.
+  SharkFinishLine.cs               Finish trigger.
+  SmoothPlayerCamera.cs            Mouse orbit, zoom, smoothing, and wall avoidance.
+
+SharkyShark/Assets/Shark/Editor/
+  SharkCourseBuilder.cs            Builds the five-shark course and course materials.
+  SharkCourseSceneSetup.cs         Creates/refreshes shark, player, and platform prefabs.
+  SharkPlayerAnimationSetup.cs     Configures imported player animations.
+  SharkProjectOrganizer.cs         Moves old assets into the organized folders via Unity.
+
+SharkyShark/Assets/Shark/Models/
+  Shark/       Shark GLB.
+  Player/      FallGuyClone animated character FBX.
+  Environment/ FallGuyClone grass platform FBX.
+SharkyShark/Assets/Shark/Animations/Controllers/
+  SharkPlatform.controller and CoursePlayer.controller.
+SharkyShark/Assets/Shark/Textures/
+  Player and shark textures.
+SharkyShark/Assets/Shark/Prefabs/
+  Player.prefab, SharkPlatform.prefab, and StartPlatform.prefab.
+SharkyShark/Assets/Shark/Materials/
+  CoursePlayer and course palette materials.
+
+WHAT TO CHANGE
+- Bite delay, pitch, swim range, and swim speed: select a shark or edit SharkPlatform.prefab; settings are on SharkPlatformController.cs.
+- Course spacing, number of sharks, start/finish positions, and palette colors: edit SharkCourseBuilder.cs.
+- Player speed, jump, and gravity: edit SharkCoursePlayerController.cs.
+- Camera feel: edit SmoothPlayerCamera.cs or its camera component settings in the scene.
+- Player death integration: replace or connect SharkBiteReceiver.cs to the team's player/death system.
+
+VALIDATION / CLEANUP
+- Unity compilation succeeded. A Play Mode check passed for safe step-off, bite timing, direction-facing, stopping during bites, bite/fall respawn, and R restart.
+- Only verified-empty folders were removed. Unity's Library cache was left alone because the Editor was open.
+- For manual changes, edit the source scripts/prefabs above; the scene can be rebuilt from the Unity Tools > Shark menu.
