@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 [InitializeOnLoad]
 internal static class SharkCourseBuilder
 {
+    
     private const string ScenePath = "Assets/Scenes/SampleScene.unity";
     private const string SetupRootName = "Shark Course";
     private const string LegacySetupRootName = "Shark Test Setup";
